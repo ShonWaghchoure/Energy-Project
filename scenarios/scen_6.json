@@ -1,0 +1,7 @@
+[
+  {"id": 1, "amount": 100, "price": 0.04, "is_buy": false},
+  {"id": 2, "amount": 5, "price": 0.06, "is_buy": true}, {"id": 3, "amount": 5, "price": 0.07, "is_buy": true},
+  {"id": 4, "amount": 5, "price": 0.08, "is_buy": true}, {"id": 5, "amount": 5, "price": 0.05, "is_buy": true},
+  {"id": 6, "amount": 5, "price": 0.09, "is_buy": true}, {"id": 7, "amount": 5, "price": 0.045, "is_buy": true},
+  {"id": 8, "amount": 5, "price": 0.055, "is_buy": true}, {"id": 9, "amount": 5, "price": 0.065, "is_buy": true}
+]
