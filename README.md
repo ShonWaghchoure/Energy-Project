@@ -1,57 +1,92 @@
-# Sample Hardhat 3 Beta Project (`mocha` and `ethers`)
+# P2P Energy Trading System with Dynamic Reputation Logic
 
-This project showcases a Hardhat 3 Beta project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+A decentralized Peer-to-Peer (P2P) energy trading market prototype built on the Ethereum blockchain. This project implements a **Reputation-Weighted** framework to ensure trust and reliability in local microgrid energy exchanges.
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## 📖 Research Context
 
-## Project Overview
+In traditional P2P markets, matching is often performed solely based on price. This system introduces a **Reputation Score** (Initial: 50) for each participant. Successful trades increment the reputation, while malicious behavior or delivery failures result in penalties, ensuring that trustworthy prosumers are prioritized in the market.
 
-This example project includes:
+## 🛠 Tech Stack
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
+- **Blockchain:** Solidity `^0.8.28`
+- **Development Suite:** Hardhat 3.0
+- **Deployment:** Hardhat Ignition
+- **Simulation Engine:** Python 3 (Web3.py)
+- **Data Architecture:** JSON-based Market Scenarios
 
-## Usage
+## 📂 Project Structure
 
-### Running Tests
+- `contracts/`: Solidity smart contracts (`UserRegistry.sol`, `EnergyMarket.sol`).
+- `scenarios/`: JSON files defining market conditions (Supply, Demand, Prices).
+- `simulate.py`: The Python execution engine that connects the scenarios to the blockchain.
+- `ignition/`: Deployment modules and on-chain addresses.
 
-To run all the tests in the project, execute the following command:
+## ⚙️ Setup Instructions
 
-```shell
-npx hardhat test
+### 1. Installation
+
+Clone the repository and install the NPM dependencies:
+
+```bash
+npm install
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### 2. Python Environment
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
+Create a virtual environment and install the required libraries to run the simulation:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install web3
 ```
 
-### Make a deployment to Sepolia
+## 🚀 Running the Simulation
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+Follow these steps in order to ensure the blockchain state and Python script are in sync:
 
-To run the deployment to a local chain:
+### Step 1: Start the Local Node
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
+In your first terminal:
+
+```bash
+npx hardhat node
 ```
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
+### Step 2: Deploy Contracts
 
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
+In a second terminal, deploy the contracts using Ignition. The `--reset` flag is used to ensure a clean state:
 
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
+```bash
+npx hardhat ignition deploy ./ignition/modules/EnergyMarket.ts --network localhost --reset
 ```
 
-After setting the variable, you can run the deployment with the Sepolia network:
+### Step 3: Execute Scenarios
 
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
+Open `simulate.py` and set the `SCENARIO_FILE` variable (e.g., "high_demand.json").
+
+Run the simulation:
+
+```bash
+python3 simulate.py
 ```
+
+## 🧪 Included Scenarios
+
+- `high_demand.json`: Simulates a scarcity environment where multiple buyers compete for limited supply.
+- `surplus.json`: Simulates a high-generation environment (e.g., peak solar hours) with excess supply.
+- `malicious.json`: Used to test the impact of reputation penalties on market participants.
+
+## 📊 Expected Output
+
+Upon running `simulate.py`, the console will display:
+
+- Successful user registrations.
+- Order submissions with ETH prices.
+- Trade Results: Matches found via overlapping price discovery.
+- Reputation Updates: Proof of reputation scores increasing (e.g., 50 -> 52) after successful trades.
+
+## 👨‍💻 Author
+
+**Shon Waghchoure**  
+Indian Institute of Information Technology (IIIT) Allahabad
