@@ -1,0 +1,31 @@
+# Node modules
+/node_modules
+
+# Compilation output
+/dist
+
+# pnpm deploy output
+/bundle
+
+# Hardhat Build Artifacts
+/artifacts
+
+# Hardhat compilation (v2) support directory
+/cache
+
+# Typechain output
+/types
+
+# Hardhat coverage reports
+/coverage
+# Python Virtual Environment
+venv/
+__pycache__/
+*.py[cod]
+
+# Ignition Deployment Journals
+# (We ignore these because they contain local state that won't work on others' machines)
+ignition/deployments/
+
+# Mac system files
+.DS_Store

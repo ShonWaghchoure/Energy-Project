@@ -1,0 +1,5 @@
+[
+  {"id": 1, "amount": 50, "price": 0.03, "is_buy": false},
+  {"id": 2, "amount": 40, "price": 0.035, "is_buy": false},
+  {"id": 6, "amount": 10, "price": 0.04, "is_buy": true}
+]
