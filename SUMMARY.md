@@ -1,235 +1,180 @@
-# P2P Energy Trading System with Reputation-Priority Matching (RWDA-Inspired)
+# P2P Energy Trading System Documentation
 
----
+## 1. Problem Statement
 
-## 🧠 Abstract
+Traditional centralized energy systems lack transparency, flexibility,
+and incentives for prosumers. This project proposes a decentralized
+Peer-to-Peer (P2P) energy trading system using blockchain technology,
+enhanced with a reputation-based matching mechanism to improve trust,
+efficiency, and fairness among participants.
 
-This project presents a decentralized Peer-to-Peer (P2P) energy trading system built using blockchain technology. The system introduces a **Reputation-Priority Matching Algorithm inspired by the Reputation Weighted Decision Algorithm (RWDA)**. 
+------------------------------------------------------------------------
 
-Unlike traditional markets that prioritize price alone, this system prioritizes **trust (reputation)** while using price as a feasibility constraint.
+## 2. System Specifications & Simulation Environment
 
----
+    Component            Specification
+    -------------------- ---------------------------------------------
+    Machine              MacBook Pro (16-inch, 2019)
+    Processor            2.6 GHz Intel Core i9 (9th Gen, 8-Core)
+    Memory               16 GB 2667 MHz DDR4
+    Storage              1 TB PCIe-based SSD
+    Blockchain Node      Hardhat Network (EVM-compatible local node)
+    Node Configuration   20 Pre-funded Accounts (Peers)
+    Environment          Python 3.x with Web3.py & Solidity 0.8.28
 
-## ⚙️ System Components
+------------------------------------------------------------------------
 
-### 1. User Registry (Smart Contract)
-- Registers users as:
-  - Prosumer (Seller)
-  - Consumer (Buyer)
-- Assigns initial reputation = 50
-- Maintains reputation in range [0, 100]
+## 3. Mathematical Formulas
 
----
+### A. Reputation Dynamics
 
-### 2. Energy Market (Smart Contract)
-- Stores:
-  - Buy Orders
-  - Sell Orders
-- Executes matching logic
+R\_{t+1} = min(100, max(0, R_t + Δρ))
 
----
+Where: - R_t: Current reputation score\
+- Δρ: Reputation change (+2 per successful trade)
 
-### 3. Python Simulation (Web3.py + Hardhat)
-- Runs 10 scenarios
-- Uses ~20 simulated peers (Hardhat accounts)
-- Logs trades and reputation changes
+------------------------------------------------------------------------
 
----
+### B. Order Matching Condition
 
-## 🧠 Matching Logic Overview
+P_buy ≥ P_sell
 
-### Steps:
-1. Users register
-2. Users submit buy/sell orders
-3. Orders are sorted based on reputation
-4. Matching is done pairwise
-5. Trades execute if price condition satisfied
-6. Reputation updated
+Transaction price = P_sell\
+Buyer surplus = P_buy - P_sell
 
----
+------------------------------------------------------------------------
 
-## ⚠️ RWDA Clarification (IMPORTANT)
+## 4. Algorithmic Pseudocode
 
-### What RWDA Ideally Is:
+### Algorithm 1: Reputation-Based Sorting
 
-RWDA Score = α × Reputation + β × Price + γ × Time
+    FOR i = 0 TO length(O) - 1:
+        FOR j = i + 1 TO length(O) - 1:
+            Rep_i = getReputation(O[i].trader)
+            Rep_j = getReputation(O[j].trader)
 
----
+            IF Rep_j > Rep_i:
+                SWAP(O[i], O[j])
 
-### What This Project Implements:
+------------------------------------------------------------------------
 
-RWDA (Simplified) = Reputation Only
+### Algorithm 2: P2P Matching Engine
 
-Score(trader) = Reputation(trader)
+    limit = MIN(buyOrders.length, sellOrders.length)
 
----
+    FOR i FROM 0 TO limit - 1:
+        BUYER = buyOrders[i]
+        SELLER = sellOrders[i]
 
-### Interpretation:
+        IF BUYER.price >= SELLER.price:
+            matchedVolume = MIN(BUYER.amount, SELLER.amount)
 
-- Reputation → determines priority
-- Price → acts as constraint (buy.price ≥ sell.price)
-- Time → not considered
+            EMIT TradeExecuted
 
----
+            updateReputation(BUYER, +2)
+            updateReputation(SELLER, +2)
 
-### Research Statement (Use This)
+    CLEAR order books
 
-> This system implements a **Reputation-Priority Matching Algorithm inspired by RWDA**, where reputation is the dominant factor influencing trade execution priority, while price is used as a feasibility constraint.
+------------------------------------------------------------------------
 
----
+## 5. System Architecture Overview
 
-## 🧾 Pseudocode
+The system consists of the following components: - Users (Buyers and
+Sellers) - Smart Contracts (UserRegistry.sol and EnergyMarket.sol) -
+Hardhat Local Blockchain Node - Web3.py interaction layer
 
----
+------------------------------------------------------------------------
 
-### Register User
+## 6. Smart Contract Design
 
-```
-FUNCTION registerUser(role):
-    IF role == None:
-        ERROR
+### UserRegistry.sol
 
-    IF user already registered:
-        ERROR
+-   Handles user registration
+-   Maintains reputation scores
+-   Functions:
+    -   registerUser()
+    -   updateReputation()
 
-    CREATE user:
-        reputation = 50
-        role = input
-```
+### EnergyMarket.sol
 
----
+-   Handles order submission
+-   Executes matching logic
+-   Emits trade events
 
-### Submit Order
+------------------------------------------------------------------------
 
-```
-FUNCTION submitOrder(amount, price, isBuy):
-    IF user not registered:
-        ERROR
+## 7. Data Structures
 
-    CREATE order
+    struct Order {
+        address trader;
+        uint price;
+        uint amount;
+    }
 
-    IF isBuy:
-        ADD to buyOrders
-    ELSE:
-        ADD to sellOrders
-```
+-   buyOrders\[\]: Array storing buyer orders
+-   sellOrders\[\]: Array storing seller orders
 
----
+------------------------------------------------------------------------
 
-### Sort by Reputation (Core Logic)
+## 8. System Logic Flow
 
-```
-FUNCTION sortByReputation(orderList):
+1.  Peer Discovery: 20 accounts initialized
+2.  Identity Management: registerUser(), initial R = 50
+3.  Order Submission: Buy/Sell orders submitted
+4.  Matching Epoch:
+    -   matchOrders() triggered
+    -   Orders sorted by reputation
+5.  Execution:
+    -   Pairwise matching
+6.  Settlement:
+    -   Successful trades → +2 reputation
 
-    FOR i FROM 0 TO n:
-        FOR j FROM i+1 TO n:
+------------------------------------------------------------------------
 
-            IF reputation(j) > reputation(i):
-                SWAP(order[i], order[j])
-```
+## 9. Assumptions
 
----
+-   Fixed reputation increment of +2 per successful trade
+-   No malicious behavior handling implemented
+-   Matching is index-based after sorting
+-   Orders are cleared after each epoch
 
-### Match Orders
+------------------------------------------------------------------------
 
-```
-FUNCTION matchOrders():
+## 10. Limitations
 
-    sortByReputation(buyOrders)
-    sortByReputation(sellOrders)
+-   Bubble Sort has O(n²) complexity
+-   Gas cost constraints in EVM
+-   No penalty mechanism for failed trades
+-   No dynamic pricing mechanism
 
-    iterations = MIN(len(buyOrders), len(sellOrders))
+------------------------------------------------------------------------
 
-    FOR i FROM 0 TO iterations:
+## 11. Results / Observations
 
-        buy = buyOrders[i]
-        sell = sellOrders[i]
+-   System successfully executes trades between peers
+-   Reputation increases over time for active participants
+-   Matching efficiency is high for small datasets (≤20 users)
 
-        IF buy.price >= sell.price:
+------------------------------------------------------------------------
 
-            matchedAmount = MIN(buy.amount, sell.amount)
+## 12. Performance Analysis
 
-            EXECUTE trade
+-   Hardware is sufficient (i9, 16GB RAM)
+-   Primary bottleneck: EVM Gas Limit
+-   Not scalable for large peer networks without optimization
 
-            UPDATE reputation(buy, +2)
-            UPDATE reputation(sell, +2)
+------------------------------------------------------------------------
 
-    CLEAR all orders
-```
+## 13. Conclusion
 
----
+This system demonstrates a decentralized P2P energy trading mechanism
+with a reputation-based matching algorithm. It improves trust and
+prioritizes reliable participants, making it a strong foundation for
+future scalable blockchain-based energy markets.
 
-### Python Simulation Logic
+------------------------------------------------------------------------
 
-```
-FOR each scenario:
 
-    FOR each user entry:
-        register if not exists
-        submit order
 
-    CALL matchOrders()
-
-    FETCH events
-
-    PRINT trade results
-    PRINT reputation snapshot
-```
-
----
-
-## 🧪 Experimental Setup
-
-### Hardware
-- Device: MacBook Pro
-- Processor: Intel Core i9
-- RAM: 16 GB
-- OS: macOS
-
----
-
-### Software Stack
-- Hardhat Local Blockchain
-- Solidity (Smart Contracts)
-- Python (Web3.py)
-
----
-
-## 🔁 Simulation Details
-
-- Total Scenarios: 10
-- Peers: ~20 (Hardhat accounts)
-- Each scenario includes:
-  - Buyers and Sellers
-  - Different price/amount combinations
-  - Dynamic registration
-
----
-
-## 📊 Observations
-
-- High-reputation users are matched first
-- System promotes trust-based trading
-- Price ensures feasibility but not priority
-- Deterministic outputs across simulations
-
----
-
-## 🚀 Future Work
-
-- Implement full RWDA (weighted scoring)
-- Add time priority (FIFO)
-- Optimize sorting to O(n log n)
-- Introduce penalties for dishonest behavior
-
----
-
-## 📌 Conclusion
-
-This project demonstrates a decentralized energy trading system where **trust (reputation)** is prioritized over pure pricing mechanisms. The RWDA-inspired approach improves fairness and reliability in peer-to-peer markets.
-
----
-
-## 🧾 One-Line Summary
-
-A blockchain-based P2P energy trading system using a **reputation-priority matching algorithm inspired by RWDA**, evaluated through multi-scenario simulations on a Hardhat local network.
+**By: Shon Waghchoure**
