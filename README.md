@@ -1,4 +1,4 @@
-# P2P Energy Trading System with Dynamic Reputation Logic
+# VoltTrust: P2P Energy Trading System with Dynamic Reputation Logic
 
 A decentralized Peer-to-Peer (P2P) energy trading market prototype built on the Ethereum blockchain. This project implements a **Reputation-Weighted** framework to ensure trust and reliability in local microgrid energy exchanges.
 
